@@ -50,16 +50,7 @@ const CardSnippet = ({ title, code, children }: { title: string, code: string, c
                                 className="[&_svg]-h-3 h-6 w-6 rounded-[6px] bg-background hover:bg-background hover:text-foreground text-foreground shadow-none  [&_svg]:w-3"
 
                             /></div>
-                        <SyntaxHighlighter
-                            language="javascript"
-                            className=" rounded-md  text-sm mt-6 "
-                            style={atomOneDark}
-                            customStyle={{
-                                padding: "24px",
-                            }}
-                        >
-                            {`${code}`}
-                        </SyntaxHighlighter>
+
                     </CollapsibleContent>
                 </Collapsible>
             </CardContent>
