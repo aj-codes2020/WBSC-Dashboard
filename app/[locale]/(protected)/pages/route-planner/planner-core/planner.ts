@@ -38,6 +38,10 @@ function riderScopedNotes(
     .map((value) => `[${memberName}] ${value}`);
 }
 
+function uniqueStrings(values: string[]): string[] {
+  return Array.from(new Set(values));
+}
+
 function buildPairedTripMap(trips: TripRecord[]) {
   const byRiderDate = new Map<string, TripRecord[]>();
 
@@ -50,7 +54,7 @@ function buildPairedTripMap(trips: TripRecord[]) {
   const nextTripById = new Map<string, TripRecord>();
   const prevTripById = new Map<string, TripRecord>();
 
-  for (const [, riderTrips] of byRiderDate) {
+  for (const riderTrips of Array.from(byRiderDate.values())) {
     const numericTrips = riderTrips
       .filter((t) => t.bookingIdNumber != null)
       .sort((a, b) => a.bookingIdNumber! - b.bookingIdNumber!);
@@ -225,7 +229,9 @@ function clusterOutboundJobs(jobs: Job[]): Job[] {
         if (candidate.facilityKey !== seed.facilityKey) return false;
 
         const seedAnchor =
-          seed.explicitPickupMin ?? seed.targetArrivalMin ?? seed.earliestPickupMin;
+          seed.explicitPickupMin ??
+          seed.targetArrivalMin ??
+          seed.earliestPickupMin;
         const candidateAnchor =
           candidate.explicitPickupMin ??
           candidate.targetArrivalMin ??
@@ -239,7 +245,10 @@ function clusterOutboundJobs(jobs: Job[]): Job[] {
 
         return true;
       })
-      .sort((a, b) => scoreClusterCandidate(seed, b) - scoreClusterCandidate(seed, a));
+      .sort(
+        (a, b) =>
+          scoreClusterCandidate(seed, b) - scoreClusterCandidate(seed, a),
+      );
 
     for (const candidate of candidatePool) {
       const currentSeats = clusterMembers.reduce((sum, x) => sum + x.seats, 0);
@@ -293,7 +302,7 @@ function clusterOutboundJobs(jobs: Job[]): Job[] {
         explicitPickupVals.length > 0 ? Math.min(...explicitPickupVals) : undefined,
       targetArrivalMin:
         targetArrivalVals.length > 0 ? Math.min(...targetArrivalVals) : undefined,
-      notes: [...new Set(clusterMembers.flatMap((x) => x.notes))],
+      notes: uniqueStrings(clusterMembers.flatMap((x) => x.notes)),
       serviceDurationMin: Math.max(
         ...clusterMembers.map((x) => x.serviceDurationMin),
       ),
@@ -441,7 +450,7 @@ function buildUnassignedStops(job: Job): RouteStop[] {
       }
     }
 
-    for (const stop of grouped.values()) {
+    for (const stop of Array.from(grouped.values())) {
       const stopTime = Math.max(cursor, ...stop.pickupMins);
 
       stops.push({
@@ -537,7 +546,7 @@ export async function planRoutes(
   };
 
   let idx = 0;
-  for (const address of uniqueAddresses) {
+  for (const address of Array.from(uniqueAddresses)) {
     idx += 1;
     setProgress(
       `Geocoding ${idx}/${uniqueAddresses.size}: ${address.slice(0, 40)}`,
@@ -761,7 +770,7 @@ export async function planRoutes(
           startMin: firstPickup,
           endMin: cursorTime,
           riders: [...job.riderNames],
-          notes: [...new Set(job.notes)],
+          notes: uniqueStrings(job.notes),
           stops,
           tripGroupKey: job.pairKey ?? job.id,
           segmentType: "initial",
@@ -884,7 +893,7 @@ export async function planRoutes(
           startMin: firstPickup,
           endMin: cursorTime,
           riders: [...job.riderNames],
-          notes: [...new Set(job.notes)],
+          notes: uniqueStrings(job.notes),
           stops,
           tripGroupKey: job.pairKey ?? job.id,
           segmentType: "return",
