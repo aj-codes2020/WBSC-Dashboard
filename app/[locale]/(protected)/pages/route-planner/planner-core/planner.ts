@@ -54,6 +54,7 @@ function buildPairedTripMap(trips: TripRecord[]) {
   const nextTripById = new Map<string, TripRecord>();
   const prevTripById = new Map<string, TripRecord>();
 
+  // Vercel-safe: do not iterate Map directly with `for...of byRiderDate`
   for (const riderTrips of Array.from(byRiderDate.values())) {
     const numericTrips = riderTrips
       .filter((t) => t.bookingIdNumber != null)
@@ -103,8 +104,6 @@ function buildIndividualOutboundJobs(
       ready ??
       (lateDrop != null ? Math.max(0, lateDrop - 75) : 0);
 
-    // FIX:
-    // do not automatically move the planned pickup 15 minutes early
     const earliestPickup = firstPickupBase;
     const latestPickup = firstPickupBase + maxLate;
 
