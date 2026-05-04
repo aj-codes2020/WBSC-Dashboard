@@ -59,6 +59,14 @@ export function getMenuList(pathname: string, t: any): Group[] {
           icon: "heroicons-outline:document",
           submenus: [],
         },
+        {
+          id: "route-planner",
+          href: "/pages/route-planner",
+          label: t("route-planner"),
+          active: pathname.includes("/pages/route-planner"),
+          icon: "heroicons-outline:document",
+          submenus: [],
+        },
       ],
     },
     

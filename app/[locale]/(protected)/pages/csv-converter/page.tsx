@@ -137,26 +137,26 @@ export default function Page() {
       const uts = "";
       const pickupComments = get(row, "Comments");
 
-      // Strip "mi"/"miles" and convert mileage to integer
-      let directDistance = get(row, "Direct Distance");
-      let mileageNumber = 0;
+    // Strip "mi"/"miles" and round mileage to the thousandths place
+    let directDistance = get(row, "Direct Distance");
+    let mileageNumber = "";
 
-      if (directDistance) {
-        const cleaned = directDistance
-          .toString()
-          .replace(/\s*mi(?:les?)?$/i, "")
-          .trim();
+    if (directDistance) {
+      const cleaned = directDistance
+        .toString()
+        .replace(/\s*mi(?:les?)?$/i, "")
+        .trim();
 
-        const parsed = parseInt(cleaned, 10);
-        mileageNumber = Number.isNaN(parsed) ? 0 : parsed;
-      }
+      const parsed = parseFloat(cleaned);
+      mileageNumber = Number.isNaN(parsed) ? "" : parsed.toFixed(3);
+    }
 
       const passengerTypes = get(row, "Passenger Types");
       const spaceTypes = get(row, "Space Types");
       const driverManual = "";
       const outcomeManual = "";
       const hasNoteManual = "";
-      const purpose = get(row, "Purpose");
+      const purpose = get(row, "Booking Purpose");
       const providerCostManual = "";
 
       out.push([
